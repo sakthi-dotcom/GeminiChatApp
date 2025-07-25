@@ -131,7 +131,10 @@ fun ChatScreen(
                             visible = true,
                             enter = fadeIn() + slideInVertically(initialOffsetY = { it / 4 })
                         ) {
-                            ChatBubble(message = message)
+                            ChatBubble(
+                                message = message,
+                                onButtonClick = { buttonText -> onIntent(ChatIntent.ButtonClicked(buttonText)) }
+                            )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                     }

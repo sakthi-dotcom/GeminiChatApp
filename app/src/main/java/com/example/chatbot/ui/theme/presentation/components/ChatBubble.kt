@@ -20,10 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.example.chatbot.data.model.ChatMessage
+import com.example.chatbot.ui.theme.presentation.chat.ChatIntent
 import kotlinx.coroutines.delay
 
 @Composable
-fun ChatBubble(message: ChatMessage) {
+fun ChatBubble(
+    message: ChatMessage,
+    onButtonClick: ((String) -> Unit)? = null
+) {
     val bubbleColor = if (message.isUser) Color(0xFFDEDEE3) else Color(0xFFDEDEE3)
     val shape = if (message.isUser) {
         RoundedCornerShape(16.dp, 0.dp, 16.dp, 16.dp)
@@ -37,17 +41,47 @@ fun ChatBubble(message: ChatMessage) {
             .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
     ) {
-        Box(
-            modifier = Modifier
-                .background(color = bubbleColor, shape = shape)
-                .padding(12.dp)
-                .widthIn(max = 280.dp)
-        ) {
-            Text(
-                text = message.text,
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyMedium
-            )
+        Column {
+            Box(
+                modifier = Modifier
+                    .background(color = bubbleColor, shape = shape)
+                    .padding(12.dp)
+                    .widthIn(max = 280.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            if (message.showButtons) {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 8.dp, start = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = { onButtonClick?.invoke("Yes") },
+                        enabled = message.buttonsEnabled,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFDEDEE3),
+                            disabledContainerColor = Color(0xFFDEDEE3).copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Text("Yes", color = Color.Black)
+                    }
+                    Button(
+                        onClick = { onButtonClick?.invoke("No") },
+                        enabled = message.buttonsEnabled,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFDEDEE3),
+                            disabledContainerColor = Color(0xFFDEDEE3).copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Text("No", color = Color.Black)
+                    }
+                }
+            }
         }
     }
 }
