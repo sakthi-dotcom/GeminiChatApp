@@ -1,6 +1,7 @@
 package com.example.chatbot.ui.theme.presentation.chat
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chatbot.data.model.ChatMessage
 import com.example.chatbot.ui.theme.presentation.components.ChatBubble
 import com.example.chatbot.ui.theme.presentation.components.TypingDotsLoader
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -89,12 +91,27 @@ fun ChatScreen(
             )
 
             if (state.messages.isEmpty()) {
+                var animatedText by remember { mutableStateOf("") }
+                var cursorVisible by remember { mutableStateOf(true) }
+                val fullText = "Say HELLO to Start Your Order!"
+
+                LaunchedEffect(Unit) {
+                    fullText.forEachIndexed { index, char ->
+                        animatedText = fullText.substring(0, index + 1)
+                        delay(100)
+                    }
+                    while (true) {
+                        cursorVisible = !cursorVisible
+                        delay(500)
+                    }
+                }
+
                 Text(
-                    "Say Hello to Coffee-Bot ☕",
+                    text = "$animatedText${if (cursorVisible) "|" else ""}",
                     modifier = Modifier.align(Alignment.Center),
                     textAlign = TextAlign.Center,
-                    color = Color.White.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodyLarge
+                    color = Color(0xFFEAE4E4).copy(alpha = 0.9f),
+                    style = MaterialTheme.typography.headlineSmall
                 )
             } else {
                 LazyColumn(
@@ -133,7 +150,9 @@ fun ChatScreen(
                         ) {
                             ChatBubble(
                                 message = message,
-                                onButtonClick = { buttonText -> onIntent(ChatIntent.ButtonClicked(buttonText)) }
+                                onButtonClick = { buttonText -> onIntent(ChatIntent.ButtonClicked(buttonText)) },
+                                onPlaceOrder = { items -> onIntent(ChatIntent.PlaceOrder(items)) },
+                                onQuantityChange = { messageId, item, quantity -> onIntent(ChatIntent.UpdateQuantity(messageId, item, quantity)) }
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))

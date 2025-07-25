@@ -5,5 +5,6 @@ data class ChatMessage(
     val text: String,
     val isUser: Boolean,
     val showButtons: Boolean = false,
-    val buttonsEnabled: Boolean = true
+    val buttonsEnabled: Boolean = true,
+    val menuItems: Map<String, Int> = emptyMap()
 )
