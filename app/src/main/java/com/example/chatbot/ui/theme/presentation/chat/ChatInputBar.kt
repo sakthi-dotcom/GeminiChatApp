@@ -72,7 +72,7 @@ fun ChatInputBar(
                 Icon(
                     imageVector = Icons.Default.Send,
                     contentDescription = "Send",
-                    tint = if (isLoading) Color.Gray else Color.Cyan
+                    tint = if (isLoading) Color.Gray else Color.White
                 )
             }
         }
