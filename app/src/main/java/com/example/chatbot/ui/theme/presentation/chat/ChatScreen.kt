@@ -15,6 +15,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.chatbot.data.model.ChatMessage
@@ -43,16 +44,22 @@ fun ChatScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("☕ CoffeeBot", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
+                title = {
+                    Text(
+                        "CoffeeBot",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineSmall.copy(fontFamily = FontFamily.SansSerif)
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF5E85AF))
             )
         },
         bottomBar = {
             Box(
                 modifier = Modifier
-                    .imePadding() // reacts to keyboard
-                    .navigationBarsPadding() // for gesture bar
-                    .padding(bottom = 8.dp) // small breathing space
+                    .imePadding()
+                    .navigationBarsPadding()
+                    .padding(bottom = 8.dp)
             ) {
                 ChatInputBar(
                     onSend = { onIntent(ChatIntent.SendMessage(it)) },
