@@ -1,0 +1,78 @@
+package com.example.chatbot.ui.theme.presentation.chat
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.*
+import com.example.chatbot.data.model.ChatMessage
+import com.example.chatbot.ui.theme.presentation.components.ChatBubble
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChatScreen(
+    state: ChatState,
+    onIntent: (ChatIntent) -> Unit,
+    effectFlow: Flow<ChatEffect>
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(true) {
+        effectFlow.collectLatest { effect ->
+            when (effect) {
+                is ChatEffect.ShowToast -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text("☕ CoffeeBot") }
+            )
+        },
+        bottomBar = {
+            ChatInputBar(onSend = {
+                onIntent(ChatIntent.SendMessage(it))
+            }, isLoading = state.isLoading)
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .background(MaterialTheme.colorScheme.background)) {
+            if (state.messages.isEmpty()) {
+                Text(
+                    text = "Say hello to CoffeeBot ☕",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    reverseLayout = true
+                ) {
+                    items(state.messages.reversed()) { message ->
+                        ChatBubble(message = message)
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+        }
+    }
+}
